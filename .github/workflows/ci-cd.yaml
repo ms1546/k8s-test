@@ -16,7 +16,7 @@ jobs:
     - name: Build and Push Docker Images
       run: |
         docker build -t user/frontend:latest ./frontend
-        docker build -t user/backend:latest -f backend/Dockerfile ./backend
+        docker build -t user/backend:latest ./backend
         echo ${{ secrets.DOCKER_HUB_PASSWORD }} | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
         docker push user/frontend:latest
         docker push user/backend:latest
