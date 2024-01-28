@@ -1,7 +1,7 @@
-FROM node:14
+# ビルドステージ
+FROM node:14 AS build
 WORKDIR /app
-COPY backend/package.json backend/package-lock.json ./
+COPY package.json package-lock.json ./
 RUN npm install
-COPY backend/ ./
-EXPOSE 3000
-CMD ["node", "index.js"]
+COPY . .
+RUN npm build
