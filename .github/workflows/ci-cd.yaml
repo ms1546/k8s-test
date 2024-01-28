@@ -1,0 +1,29 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v2
+
+    - name: Build and Push Docker Images
+      run: |
+        docker build -t user/frontend:latest -f Dockerfile.frontend .
+        docker build -t user/backend:latest -f Dockerfile.backend .
+        echo ${{ secrets.DOCKER_HUB_PASSWORD }} | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
+        docker push user/frontend:latest
+        docker push user/backend:latest
+
+    - name: Deploy to Kubernetes
+      run: |
+        kubectl apply -f k8s/frontend-deployment.yaml
+        kubectl apply -f k8s/backend-deployment.yaml
+        kubectl apply -f k8s/frontend-service.yaml
+        kubectl apply -f k8s/backend-service.yaml
